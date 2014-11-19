@@ -15,30 +15,35 @@ public class RandomForest {
 	ArrayList<DecisionTree> decisionTrees;
 	public RandomForest(DataSet dataSet){
 		this.dataSet = dataSet;
-		N=10;
+		N=15;
 		totalSampleNum = dataSet.getTotalSampleNum();
 		dimensionNum = dataSet.getDimensionNum();
 		decisionTrees = new ArrayList<DecisionTree>();
 		for(int i = 0;i < N;i++){
-			int deepth = 5*i+20;
-			int leastLeaf = 5*i+40;
+			int deepth = 5*i+60;
+			int leastLeaf = 4*i+20;
 			DecisionTree dt = new DecisionTree(dataSet, deepth, leastLeaf);
 			decisionTrees.add(dt);
 		}
 	}
 	
 	public void trainRandomForest(double[][] dataMatrix){
+		
 		int len = dataMatrix.length;
+		int size = (int)(2*len/3);
+		//System.out.println("len = "+len+",size = "+size);
 		for(int i = 0;i < N;i++){
-			double[][] extractData = new double[len][dimensionNum];
-			for(int x = 0;x < len;x++){
+			double[][] extractData = new double[size][dimensionNum];
+			for(int x = 0;x < size;x++){
 				int row = (int)(Math.random()*len);
 				for(int j = 0;j < dimensionNum;j++){
 					extractData[x][j] = dataMatrix[row][j];
 				}
 			}
 			DecisionTree dt = decisionTrees.get(i);
+			//System.out.println("before train,i = "+i);
 			dt.trainDT(extractData, dataSet.getAttributeList(), dataSet.getContinuousArrayList());
+			//System.out.println("after train");
 		}
 	}
 	
@@ -136,7 +141,7 @@ public class RandomForest {
 		variance = variance/accuracyArrayList.size();
 		variance = Math.sqrt(variance);
 		
-		System.out.println("平均准确率为: "+averageRatio+",标准差为："+variance);
+		System.out.println("Random Forest平均准确率为: "+averageRatio+",标准差为："+variance);
 		
 	}
 }

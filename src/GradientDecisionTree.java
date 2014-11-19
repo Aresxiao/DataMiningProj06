@@ -1,10 +1,8 @@
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 
-public class DecisionTree {
 
+public class GradientDecisionTree {
 
 	TreeNode rootNode;
 	ArrayList<Integer> attributeContinuous;
@@ -15,7 +13,7 @@ public class DecisionTree {
 	int M;
 	ArrayList<Integer> sampleErrorClassArray;
 	
-	public DecisionTree(int flag,ArrayList<Integer> continuous,int maxDeep,int leastLeaf){
+	public GradientDecisionTree(int flag,ArrayList<Integer> continuous,int maxDeep,int leastLeaf){
 		this.flag = flag;
 		
 		attributeContinuous = (ArrayList<Integer>) continuous.clone();
@@ -24,7 +22,7 @@ public class DecisionTree {
 		this.leastLeaf = leastLeaf;
 	}
 	
-	public DecisionTree(DataSet ds,int maxDeepth,int leastLeaf){
+	public GradientDecisionTree(DataSet ds,int maxDeepth,int leastLeaf){
 		dataSet = ds;
 		attributeContinuous = (ArrayList<Integer>) ds.getContinuousArrayList().clone();
 		this.flag = ds.getFlag();
@@ -37,183 +35,91 @@ public class DecisionTree {
 	
 	public TreeNode createDT(double[][] trainData,ArrayList<Integer> dataAttributeList,ArrayList<Integer> continuous,int deepth){
 		TreeNode node= new TreeNode();
-		if(flag==0){
-			/*
-			if(deepth<0){
-				double maxKey = InfoGain.setDataSetClass(InfoGain.getTarget(trainData));
-				node.setNodeName("leafNode");
-				node.setNodeId(0);
-				node.setTartgetValue(maxKey);
-				return node;
-			}
-			*/
-			if(trainData.length < leastLeaf){
-				double maxKey = InfoGain.setDataSetClass(InfoGain.getTarget(trainData));
-				node.setNodeName("leafNode");
-				node.setNodeId(0);
-				node.setTartgetValue(maxKey);
-				return node;
-			}
-			double pureVal = InfoGain.isPure(InfoGain.getTarget(trainData));
-			if(pureVal!=-1){
-				node.setNodeName("leafNode");
-				node.setNodeId(0);
-				node.setTartgetValue(pureVal);
-				return node;
-			}
-			if(dataAttributeList.size()==0){
-				
-				double maxKey = InfoGain.setDataSetClass(InfoGain.getTarget(trainData));
-				node.setNodeName("leafNode");
-				node.setNodeId(0);
-				node.setTartgetValue(maxKey);
-				return node;
-			}
-			else{
-				
-				double minGain = 10.0;
-				int attrIndex = -1;
-				ArrayList<Integer> randomAttributeList = new ArrayList<Integer>();
-				HashSet<Integer> set = new HashSet<Integer>();
-				
-				for(int y = 0;y < M;y++){
-					int size = dataAttributeList.size();
-					int index = (int) (Math.random()*size);
-					
-					while(set.contains(dataAttributeList.get(index))){
-						index = (int) (Math.random()*size);
-					}
-					
-					index = dataAttributeList.get(index);
-					set.add(index);
-					randomAttributeList.add(index);
-				}
-				//System.out.println("before calculate gini");
-				InfoGain infoGain = new InfoGain(trainData,randomAttributeList,continuous);
-				for(int i = 0;i < randomAttributeList.size();i++){
-					double tempGain = infoGain.giniIndex(randomAttributeList.get(i));
-					
-					if(minGain > tempGain){
-						minGain = tempGain;
-						attrIndex = i;
-					}
-				}
-				//System.out.println("after calculate gini");
-				if(attrIndex==-1){
-					
-					double maxKey = InfoGain.setDataSetClass(InfoGain.getTarget(trainData));
-					node.setNodeName("leafNode");
-					node.setNodeId(0);
-					node.setTartgetValue(maxKey);
-					return node;
-				}
-				node.setAttributeValue(randomAttributeList.get(attrIndex));
-				node.setSplitVal(infoGain.getSplit(randomAttributeList.get(attrIndex)));
-				node.setContinuous(continuous.get(randomAttributeList.get(attrIndex)));
-				
-				infoGain.splitData(randomAttributeList.get(attrIndex));
-				double[][] leftData = infoGain.getLeftData();
-				double[][] rightData = infoGain.getRightData();
-				
-				ArrayList<Integer> leftAttributeList = new ArrayList<>();
-				
-				ArrayList<Integer> rightAttributeList = new ArrayList<>();
-				for(int i = 0;i < dataAttributeList.size();i++){
-					leftAttributeList.add(dataAttributeList.get(i));
-					rightAttributeList.add(dataAttributeList.get(i));
-				}
-				
-				if(leftData.length == 0||rightData.length == 0){
-					double maxKey = InfoGain.setDataSetClass(InfoGain.getTarget(trainData));
-					node.setTartgetValue(maxKey);
-					node.setNodeId(0);
-					node.setNodeName("leafNode");
-					return node;
-				}
-				
-				TreeNode leftNode = createDT(leftData, leftAttributeList, continuous,deepth-1);
-				TreeNode rightNode = createDT(rightData, rightAttributeList, continuous,deepth-1);
-				node.getChildTreeNodes().add(leftNode);
-				node.getChildTreeNodes().add(rightNode);
-				node.setNodeId(1);
-			}
+		
+		
+			
+		if(trainData.length < leastLeaf){
+			double val = InfoGain.setDataSetMeanValue(InfoGain.getTarget(trainData));
+			node.setNodeName("leafNode");
+			node.setNodeId(0);
+			node.setTartgetValue(val);
+			return node;
+		}
+		if(dataAttributeList.size() == 0){
+			double val = InfoGain.setDataSetMeanValue(InfoGain.getTarget(trainData));
+			node.setNodeId(0);
+			node.setTartgetValue(val);
+			return node;
 		}
 		else {
+			double minVariance =100000;
+			int attrIndex = -1;
 			
-			if(deepth<0){
+			ArrayList<Integer> randomAttributeList = new ArrayList<Integer>();
+			HashSet<Integer> set = new HashSet<Integer>();
+			
+			for(int y = 0;y < M;y++){
+				int size = dataAttributeList.size();
+				int index = (int) (Math.random()*size);
+				
+				while(set.contains(dataAttributeList.get(index))){
+					index = (int) (Math.random()*size);
+				}
+				
+				index = dataAttributeList.get(index);
+				set.add(index);
+				randomAttributeList.add(index);
+			}
+			
+			InfoGain infoGain = new InfoGain(trainData,randomAttributeList,continuous);
+			for(int i = 0;i < randomAttributeList.size();i++){
+				double tempVariance = infoGain.calMinVariance(randomAttributeList.get(i));
+				
+				if(minVariance > tempVariance){
+					minVariance = tempVariance;
+					attrIndex = i;
+				}
+			}
+			if(attrIndex==-1){
+				
 				double val = InfoGain.setDataSetMeanValue(InfoGain.getTarget(trainData));
 				node.setNodeName("leafNode");
 				node.setNodeId(0);
 				node.setTartgetValue(val);
 				return node;
 			}
-			if(trainData.length < leastLeaf){
+			node.setAttributeValue(randomAttributeList.get(attrIndex));
+			node.setSplitVal(infoGain.getSplit(randomAttributeList.get(attrIndex)));
+			node.setContinuous(continuous.get(randomAttributeList.get(attrIndex)));
+			
+			infoGain.splitData(randomAttributeList.get(attrIndex));
+			double[][] leftData = infoGain.getLeftData();
+			double[][] rightData = infoGain.getRightData();
+			
+			ArrayList<Integer> leftAttributeList = new ArrayList<>();
+			
+			ArrayList<Integer> rightAttributeList = new ArrayList<>();
+			for(int i = 0;i < dataAttributeList.size();i++){
+				leftAttributeList.add(dataAttributeList.get(i));
+				rightAttributeList.add(dataAttributeList.get(i));
+			}
+			
+			if(leftData.length == 0||rightData.length == 0){
 				double val = InfoGain.setDataSetMeanValue(InfoGain.getTarget(trainData));
+				node.setTartgetValue(val);
+				node.setNodeId(0);
 				node.setNodeName("leafNode");
-				node.setNodeId(0);
-				node.setTartgetValue(val);
 				return node;
 			}
-			if(dataAttributeList.size() == 0){
-				double val = InfoGain.setDataSetMeanValue(InfoGain.getTarget(trainData));
-				node.setNodeId(0);
-				node.setTartgetValue(val);
-				return node;
-			}
-			else {
-				double minVariance =100000;
-				int attrIndex = -1;
-				InfoGain infoGain = new InfoGain(trainData,dataAttributeList,continuous);
-				for(int i = 0;i < dataAttributeList.size();i++){
-					double tempVariance = infoGain.calMinVariance(dataAttributeList.get(i));
-					
-					if(minVariance > tempVariance){
-						minVariance = tempVariance;
-						attrIndex = i;
-					}
-				}
-				if(attrIndex==-1){
-					
-					double val = InfoGain.setDataSetMeanValue(InfoGain.getTarget(trainData));
-					node.setNodeName("leafNode");
-					node.setNodeId(0);
-					node.setTartgetValue(val);
-					return node;
-				}
-				node.setAttributeValue(dataAttributeList.get(attrIndex));
-				node.setSplitVal(infoGain.getSplit(dataAttributeList.get(attrIndex)));
-				node.setContinuous(continuous.get(dataAttributeList.get(attrIndex)));
-				
-				infoGain.splitData(dataAttributeList.get(attrIndex));
-				double[][] leftData = infoGain.getLeftData();
-				double[][] rightData = infoGain.getRightData();
-				
-				ArrayList<Integer> leftAttributeList = new ArrayList<>();
-				
-				ArrayList<Integer> rightAttributeList = new ArrayList<>();
-				for(int i = 0;i < dataAttributeList.size();i++){
-					if(i != attrIndex){
-						leftAttributeList.add(dataAttributeList.get(i));
-						rightAttributeList.add(dataAttributeList.get(i));
-					}
-				}
-				
-				if(leftData.length == 0||rightData.length == 0){
-					double val = InfoGain.setDataSetMeanValue(InfoGain.getTarget(trainData));
-					node.setTartgetValue(val);
-					node.setNodeId(0);
-					node.setNodeName("leafNode");
-					return node;
-				}
-				
-				//System.out.println("before recursion");
-				TreeNode leftNode = createDT(leftData, leftAttributeList, continuous,deepth-1);
-				TreeNode rightNode = createDT(rightData, rightAttributeList, continuous,deepth-1);
-				node.getChildTreeNodes().add(leftNode);
-				node.getChildTreeNodes().add(rightNode);
-				node.setNodeId(1);
-			}
+			
+			//System.out.println("before recursion");
+			TreeNode leftNode = createDT(leftData, leftAttributeList, continuous,deepth-1);
+			TreeNode rightNode = createDT(rightData, rightAttributeList, continuous,deepth-1);
+			node.getChildTreeNodes().add(leftNode);
+			node.getChildTreeNodes().add(rightNode);
+			node.setNodeId(1);
 		}
+		
 		return node;
 	}
 	
@@ -400,3 +306,4 @@ public class DecisionTree {
 	
 	
 }
+

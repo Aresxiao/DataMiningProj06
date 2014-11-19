@@ -1,10 +1,8 @@
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 
-public class DecisionTree {
 
+public class SimpleDecisionTree {
 
 	TreeNode rootNode;
 	ArrayList<Integer> attributeContinuous;
@@ -15,7 +13,7 @@ public class DecisionTree {
 	int M;
 	ArrayList<Integer> sampleErrorClassArray;
 	
-	public DecisionTree(int flag,ArrayList<Integer> continuous,int maxDeep,int leastLeaf){
+	public SimpleDecisionTree(int flag,ArrayList<Integer> continuous,int maxDeep,int leastLeaf){
 		this.flag = flag;
 		
 		attributeContinuous = (ArrayList<Integer>) continuous.clone();
@@ -24,7 +22,7 @@ public class DecisionTree {
 		this.leastLeaf = leastLeaf;
 	}
 	
-	public DecisionTree(DataSet ds,int maxDeepth,int leastLeaf){
+	public SimpleDecisionTree(DataSet ds,int maxDeepth,int leastLeaf){
 		dataSet = ds;
 		attributeContinuous = (ArrayList<Integer>) ds.getContinuousArrayList().clone();
 		this.flag = ds.getFlag();
@@ -73,25 +71,11 @@ public class DecisionTree {
 				
 				double minGain = 10.0;
 				int attrIndex = -1;
-				ArrayList<Integer> randomAttributeList = new ArrayList<Integer>();
-				HashSet<Integer> set = new HashSet<Integer>();
 				
-				for(int y = 0;y < M;y++){
-					int size = dataAttributeList.size();
-					int index = (int) (Math.random()*size);
-					
-					while(set.contains(dataAttributeList.get(index))){
-						index = (int) (Math.random()*size);
-					}
-					
-					index = dataAttributeList.get(index);
-					set.add(index);
-					randomAttributeList.add(index);
-				}
 				//System.out.println("before calculate gini");
-				InfoGain infoGain = new InfoGain(trainData,randomAttributeList,continuous);
-				for(int i = 0;i < randomAttributeList.size();i++){
-					double tempGain = infoGain.giniIndex(randomAttributeList.get(i));
+				InfoGain infoGain = new InfoGain(trainData,dataAttributeList,continuous);
+				for(int i = 0;i < dataAttributeList.size();i++){
+					double tempGain = infoGain.giniIndex(dataAttributeList.get(i));
 					
 					if(minGain > tempGain){
 						minGain = tempGain;
@@ -107,11 +91,11 @@ public class DecisionTree {
 					node.setTartgetValue(maxKey);
 					return node;
 				}
-				node.setAttributeValue(randomAttributeList.get(attrIndex));
-				node.setSplitVal(infoGain.getSplit(randomAttributeList.get(attrIndex)));
-				node.setContinuous(continuous.get(randomAttributeList.get(attrIndex)));
+				node.setAttributeValue(dataAttributeList.get(attrIndex));
+				node.setSplitVal(infoGain.getSplit(dataAttributeList.get(attrIndex)));
+				node.setContinuous(continuous.get(dataAttributeList.get(attrIndex)));
 				
-				infoGain.splitData(randomAttributeList.get(attrIndex));
+				infoGain.splitData(dataAttributeList.get(attrIndex));
 				double[][] leftData = infoGain.getLeftData();
 				double[][] rightData = infoGain.getRightData();
 				

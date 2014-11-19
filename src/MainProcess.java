@@ -7,14 +7,23 @@ public class MainProcess {
 	public static void main(String[] args) throws IOException{
 		
 		
-		DataSet dataSet = new DataSet();
+		DataSet dataSet1 = new DataSet();
+		dataSet1.readPost();
+		System.out.println("开始测试Random Forest的正确率");
+		RandomForest randomForest = new RandomForest(dataSet1);
+		randomForest.tenFoldCrossValidation();
 		
-		dataSet.readPost();
-		System.out.println("读完数据");
-		DecisionTree dt = new DecisionTree(dataSet, 100, 40);
-		dt.tenFoldCrossValidation();
-		//RandomForest randomForest = new RandomForest(dataSet);
-		//randomForest.tenFoldCrossValidation();
+		System.out.println("开始测试AdaBoost的正确率");
+		DataSet dataSet2 = new DataSet();
+		dataSet2.readPost();
+		AdaBoost boost = new AdaBoost(dataSet2);
+		boost.tenFoldCrossValidation();
+		
+		System.out.println("开始测试Gradient Boost的正确率");
+		DataSet dataSet3 = new DataSet();
+		dataSet3.readPost();
+		GradientBoost gradientBoost = new GradientBoost(dataSet3);
+		gradientBoost.tenFoldCrossValidation();
 		
 	}
 	

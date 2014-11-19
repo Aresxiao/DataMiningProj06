@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.PriorityQueue;
 
 
 
@@ -80,6 +81,7 @@ public class InfoGain {
 				
 				double v = (biggerSetSize/(biggerSetSize+lessSetSize))*getVariance(biggerSet)+
 						(lessSetSize/(lessSetSize+biggerSetSize))*getVariance(lessSet);
+				
 				if(minVariance>v){
 					minVariance = v;
 					splitVal = mid;
@@ -139,6 +141,7 @@ public class InfoGain {
 		if(continuousArrayList.get(i)==0){			//对于连续属性，连续属性对属性的值空间排序，然后找出最小GINI值的分裂点
 			ArrayList<Double> tempAttributeValueList = new ArrayList<Double>();
 			
+			
 			for(int x = 0;x<data.length;x++){
 				if(!tempAttributeValueList.contains(data[x][i])){
 					tempAttributeValueList.add(data[x][i]);
@@ -146,6 +149,7 @@ public class InfoGain {
 			}
 			
 			double[] tempAttriValue = new double[tempAttributeValueList.size()];
+			
 			for(int x = 0;x < tempAttributeValueList.size();x++){
 				tempAttriValue[x] = tempAttributeValueList.get(x);
 			}
@@ -169,14 +173,17 @@ public class InfoGain {
 				double mid = (tempAttriValue[x]+tempAttriValue[x+1])/2.0;
 				HashMap<Integer, Double> lessSet = new HashMap<Integer,Double>();
 				HashMap<Integer, Double> biggerSet = new HashMap<Integer,Double>();
+				
 				for(int y = 0;y<data.length;y++){
 					int lastIndex = data[0].length-1;
 					double theme = data[y][lastIndex];
 					if(data[y][i]<mid){
 						lessSet.put(y, theme);
+						
 					}
 					else{
 						biggerSet.put(y, theme);
+						
 					}
 				}
 				double biggerSetSize = biggerSet.size();
@@ -184,6 +191,7 @@ public class InfoGain {
 				
 				double giniGain = (biggerSetSize/(biggerSetSize+lessSetSize))*getGini(biggerSet)+
 						(lessSetSize/(lessSetSize+biggerSetSize))*getGini(lessSet);
+				
 				if(minGini>giniGain){
 					minGini = giniGain;
 					splitVal = mid;
@@ -236,7 +244,6 @@ public class InfoGain {
 		}
 		return gini;
 	}
-	
 	
 	public double getGini(HashMap<Integer, Double> map){
 		double size = map.size();
