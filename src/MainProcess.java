@@ -6,13 +6,13 @@ public class MainProcess {
 	
 	public static void main(String[] args) throws IOException{
 		
-		
+		/*
 		DataSet dataSet1 = new DataSet();
 		dataSet1.readPost();
 		System.out.println("开始测试Random Forest的正确率");
 		RandomForest randomForest = new RandomForest(dataSet1);
 		randomForest.tenFoldCrossValidation();
-		
+		*/
 		System.out.println("开始测试AdaBoost的正确率");
 		DataSet dataSet2 = new DataSet();
 		dataSet2.readPost();
